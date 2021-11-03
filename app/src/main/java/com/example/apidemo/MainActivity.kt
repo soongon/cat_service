@@ -3,6 +3,7 @@ package com.example.apidemo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.TextView
 import com.example.apidemo.api.TheCatApiService
 import retrofit2.Call
 import retrofit2.Callback
@@ -35,7 +36,8 @@ class MainActivity : AppCompatActivity() {
 
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 if (response.isSuccessful) {
-                    Log.i("MainActivity", response.body().toString())
+//                    Log.i("MainActivity", response.body().toString())
+                    findViewById<TextView>(R.id.textDisplay).text = response.body()
                 } else {
                     Log.e("MainActivity", "error in onResponse")
                 }
