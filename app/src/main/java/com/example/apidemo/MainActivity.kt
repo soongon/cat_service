@@ -3,8 +3,8 @@ package com.example.apidemo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import com.example.apidemo.api.TheCatApiService
 import com.example.apidemo.model.ImageResultData
 import retrofit2.Call
@@ -12,9 +12,12 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import retrofit2.converter.scalars.ScalarsConverterFactory
 
 class MainActivity : AppCompatActivity() {
+
+    private val imageView: ImageView by lazy { findViewById(R.id.imageView) }
+    private val breedText: TextView by lazy { findViewById(R.id.textBreed) }
+    private val temperamentText: TextView by lazy { findViewById(R.id.textTemperament) }
 
     private val retrofit by lazy {
         Retrofit.Builder()
@@ -27,9 +30,8 @@ class MainActivity : AppCompatActivity() {
         retrofit.create(TheCatApiService::class.java)
     }
 
-    private val serverResponseView: TextView by lazy {
-        findViewById(R.id.textDisplay)
-    }
+    private val imageLoader: ImageLoader by lazy { GlideImageLoader(this) }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +48,13 @@ class MainActivity : AppCompatActivity() {
                 response: Response<List<ImageResultData>>) {
                 if (response.isSuccessful) {
                     val result: List<ImageResultData>? = response.body()
-                    serverResponseView.text = result?.firstOrNull()?.url ?: "No URL"
+                    val imageUrl = result?.firstOrNull()?.url ?: "No URL"
+                    val breed = result?.firstOrNull()?.breeds?.firstOrNull()?.name
+                    val temperament = result?.firstOrNull()?.breeds?.firstOrNull()?.temperament
+
+                    imageLoader.loadImage(imageUrl, imageView)
+                    breedText.text = breed ?: "unknown"
+                    temperamentText.text = temperament ?: "unknown"
 
 //                    Toast.makeText(this@MainActivity, imageURL, Toast.LENGTH_SHORT).show()
                 } else {
